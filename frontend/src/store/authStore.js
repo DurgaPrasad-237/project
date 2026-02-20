@@ -14,12 +14,10 @@ const useAuthStore = create((set, get) => ({
     }
   },
 
-  login: async (email, password) => {
-    console.log("📡 About to call API:", import.meta.env.VITE_API_URL)
-    const res = await api.post('/auth/login', { email, password })
-    console.log("📥 API responded:", res)
-    set({ user: res.data.user })
-  },
+login: async (email, password) => {
+  const res = await api.post('/auth/login', { email, password })
+  set({ user: res.data.user, loading: false })  // ← add loading: false
+},
 
   signup: async (name, email, password, role) => {
     await api.post('/auth/signup', { name, email, password, role })
