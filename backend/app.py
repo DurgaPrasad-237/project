@@ -12,6 +12,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
+# Detect environment
 APP_ENV = os.getenv("APP_ENV", "development")
 IS_PROD = APP_ENV == "production"
 
@@ -19,7 +20,7 @@ IS_PROD = APP_ENV == "production"
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "super-secret-change-in-prod")
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 900        # 15 minutes
 app.config["JWT_REFRESH_TOKEN_EXPIRES"] = 604800    # 7 days
-
+    
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_COOKIE_CSRF_PROTECT"] = False
 
@@ -29,11 +30,17 @@ app.config["JWT_COOKIE_SAMESITE"] = "None" if IS_PROD else "Lax"
 jwt = JWTManager(app)
 
 # CORS (must allow credentials + both localhost styles)
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+FRONTEND_URL = os.getenv("FRONTEND_URL")
 
-CORS(app,
-     supports_credentials=True,
-     origins=[FRONTEND_URL])
+CORS(
+    app,
+    supports_credentials=True,
+    resources={
+        r"/api/*": {
+            "origins": [FRONTEND_URL]
+        }
+    }
+)
 
 # Routes
 app.register_blueprint(auth_bp, url_prefix="/api/auth")
