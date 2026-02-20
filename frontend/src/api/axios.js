@@ -2,7 +2,7 @@ import axios from 'axios'
 import useAuthStore from '../store/authStore'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   withCredentials: true, // MUST for cookie auth
 })
 
@@ -26,7 +26,8 @@ api.interceptors.response.use(
     const isAuthRoute =
       originalRequest.url.includes('/auth/login') ||
       originalRequest.url.includes('/auth/signup') ||
-      originalRequest.url.includes('/auth/refresh')
+      originalRequest.url.includes('/auth/refresh') ||
+      originalRequest.url.includes('/auth/me') // ← prevents infinite loop on fresh visit
 
     // Only try refresh for protected routes
     if (status === 401 && !originalRequest._retry && !isAuthRoute) {
@@ -40,15 +41,12 @@ api.interceptors.response.use(
       isRefreshing = true
 
       try {
-        await api.post('/auth/refresh') // use SAME instance
+        await api.post('/auth/refresh')
         processQueue(null)
         return api(originalRequest)
       } catch (err) {
         processQueue(err)
-
-        // Kill session cleanly
         useAuthStore.getState().clearUser()
-
         return Promise.reject(err)
       } finally {
         isRefreshing = false
