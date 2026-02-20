@@ -11,34 +11,27 @@ export default function LoginPage() {
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
-  e.preventDefault()
-  console.log("🔥 Submit clicked")
-
-  setError('')
-  setLoading(true)
-
-  try {
-    console.log("📤 Calling login with:", email)
-
-    await login(email, password)
-
-    console.log("✅ Login resolved")
-    navigate('/')
-
-  } catch (err) {
-    console.log("❌ Login error:", err)
-    setError(err.response?.data?.error || 'Login failed')
-  } finally {
-    setLoading(false)
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+    try {
+      await login(email, password)
+      navigate('/', { replace: true })
+    } catch (err) {
+      setError(err.response?.data?.error || 'Login failed. Check your credentials.')
+    } finally {
+      setLoading(false)
+    }
   }
-}
 
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h1 className="auth-title">Welcome back</h1>
+        <h1 className="auth-title">Welcome back 👋</h1>
         <p className="auth-subtitle">Sign in to your WorkManager account</p>
+
         {error && <div className="alert alert-error">{error}</div>}
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-label">Email</label>
@@ -46,9 +39,10 @@ export default function LoginPage() {
               className="form-input"
               type="email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               required
+              autoFocus
             />
           </div>
           <div className="form-group">
@@ -57,15 +51,20 @@ export default function LoginPage() {
               className="form-input"
               type="password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
             />
           </div>
-          <button className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px' }} disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
+          <button
+            className="btn btn-primary"
+            style={{ width: '100%', justifyContent: 'center', padding: '12px' }}
+            disabled={loading}
+          >
+            {loading ? 'Signing in…' : 'Sign In'}
           </button>
         </form>
+
         <div className="auth-switch">
           Don't have an account? <Link to="/signup">Sign up</Link>
         </div>

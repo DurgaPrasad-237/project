@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import useAuthStore from '../store/authStore'
 import useUsersStore from '../store/usersStore'
 
-function UserModal({ user, onClose, onSave, currentUserId, isEmployer }) {
+function UserModal({ user, onClose, onSave }) {
   const [form, setForm] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -31,7 +31,7 @@ function UserModal({ user, onClose, onSave, currentUserId, isEmployer }) {
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <span className="modal-title">{user ? 'Edit User' : 'Add Employee'}</span>
           <button className="modal-close" onClick={onClose}>✕</button>
@@ -53,7 +53,7 @@ function UserModal({ user, onClose, onSave, currentUserId, isEmployer }) {
           <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
             <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
             <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? 'Saving...' : 'Save'}
+              {loading ? 'Saving…' : 'Save'}
             </button>
           </div>
         </form>
@@ -65,8 +65,7 @@ function UserModal({ user, onClose, onSave, currentUserId, isEmployer }) {
 export default function UsersPage() {
   const { user: currentUser, isEmployer } = useAuthStore()
   const { users, loading, fetchUsers, createUser, updateUser, deleteUser } = useUsersStore()
-
-  const [modal, setModal] = useState(null) // null | { mode: 'add'|'edit', user? }
+  const [modal, setModal] = useState(null)
   const [error, setError] = useState('')
 
   useEffect(() => { fetchUsers() }, [])
@@ -76,14 +75,12 @@ export default function UsersPage() {
     return u.id === currentUser.id
   }
 
-  const canDelete = (u) => isEmployer() && u.id !== currentUser.id && u.employer_id === currentUser.id
+  const canDelete = (u) =>
+    isEmployer() && u.id !== currentUser.id && u.employer_id === currentUser.id
 
   const handleSave = async (data) => {
-    if (modal.mode === 'add') {
-      await createUser(data)
-    } else {
-      await updateUser(modal.user.id, data)
-    }
+    if (modal.mode === 'add') await createUser(data)
+    else await updateUser(modal.user.id, data)
   }
 
   const handleDelete = async (u) => {
@@ -116,7 +113,7 @@ export default function UsersPage() {
       <div className="card" style={{ padding: 0 }}>
         <div className="table-wrapper">
           {loading ? (
-            <div className="spinner">Loading users...</div>
+            <div className="spinner">Loading users…</div>
           ) : (
             <table>
               <thead>
@@ -128,15 +125,17 @@ export default function UsersPage() {
                 </tr>
               </thead>
               <tbody>
-                {users.map(u => (
+                {(users ?? []).map((u) => (
                   <tr key={u.id}>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <div className="avatar" style={{ width: 30, height: 30, fontSize: '0.75rem' }}>
-                          {u.name[0]?.toUpperCase()}
+                          {u.name?.[0]?.toUpperCase()}
                         </div>
                         {u.name}
-                        {u.id === currentUser.id && <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>(you)</span>}
+                        {u.id === currentUser.id && (
+                          <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>(you)</span>
+                        )}
                       </div>
                     </td>
                     <td>{u.email}</td>
@@ -153,7 +152,9 @@ export default function UsersPage() {
                             Delete
                           </button>
                         )}
-                        {!canEdit(u) && !canDelete(u) && <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>—</span>}
+                        {!canEdit(u) && !canDelete(u) && (
+                          <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>—</span>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -169,8 +170,6 @@ export default function UsersPage() {
           user={modal.user}
           onClose={() => setModal(null)}
           onSave={handleSave}
-          currentUserId={currentUser.id}
-          isEmployer={isEmployer()}
         />
       )}
     </div>

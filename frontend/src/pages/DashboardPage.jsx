@@ -14,11 +14,12 @@ export default function DashboardPage() {
     fetchUsers()
   }, [])
 
-  
-const pending = (tasks ?? []).filter(t => t.status === 'pending').length
-const inProgress = (tasks ?? []).filter(t => t.status === 'in_progress').length
-const completed = (tasks ?? []).filter(t => t.status === 'completed').length
-
+  const safeTasks = tasks ?? []
+  const safeUsers = users ?? []
+  const pending = safeTasks.filter((t) => t.status === 'pending').length
+  const inProgress = safeTasks.filter((t) => t.status === 'in_progress').length
+  const completed = safeTasks.filter((t) => t.status === 'completed').length
+  const teamCount = safeUsers.filter((u) => u.employer_id === user?.id).length
 
   return (
     <div>
@@ -32,7 +33,7 @@ const completed = (tasks ?? []).filter(t => t.status === 'completed').length
       <div className="stats-grid">
         <div className="stat-card">
           <div className="stat-label">Total Tasks</div>
-          <div className="stat-value" style={{ color: '#4f46e5' }}>{tasks.length}</div>
+          <div className="stat-value" style={{ color: '#4f46e5' }}>{safeTasks.length}</div>
         </div>
         <div className="stat-card">
           <div className="stat-label">Pending</div>
@@ -49,15 +50,17 @@ const completed = (tasks ?? []).filter(t => t.status === 'completed').length
         {isEmployer() && (
           <div className="stat-card">
             <div className="stat-label">Team Members</div>
-            <div className="stat-value" style={{ color: '#8b5cf6' }}>{users.filter(u => u.employer_id == user?.id).length}</div>
+            <div className="stat-value" style={{ color: '#8b5cf6' }}>{teamCount}</div>
           </div>
         )}
       </div>
 
       <div className="card">
-        <h2 style={{ marginBottom: 16, fontSize: '1rem', fontWeight: 600 }}>Recent Tasks</h2>
-        {tasks.length === 0 ? (
-          <p style={{ color: 'var(--muted)' }}>No tasks yet. <Link to="/tasks" style={{ color: 'var(--primary)' }}>Create one!</Link></p>
+        <h2 style={{ marginBottom: 16, fontSize: '1rem', fontWeight: 700 }}>Recent Tasks</h2>
+        {safeTasks.length === 0 ? (
+          <p style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>
+            No tasks yet. <Link to="/tasks" style={{ color: 'var(--primary)' }}>Create one!</Link>
+          </p>
         ) : (
           <div className="table-wrapper">
             <table>
@@ -70,16 +73,27 @@ const completed = (tasks ?? []).filter(t => t.status === 'completed').length
                 </tr>
               </thead>
               <tbody>
-                {tasks.slice(0, 5).map(task => (
+                {safeTasks.slice(0, 5).map((task) => (
                   <tr key={task.id}>
-                    <td>{task.title}</td>
-                    <td><span className={`badge badge-${task.status}`}>{task.status.replace('_', ' ')}</span></td>
+                    <td style={{ fontWeight: 500 }}>{task.title}</td>
+                    <td>
+                      <span className={`badge badge-${task.status}`}>
+                        {task.status.replace('_', ' ')}
+                      </span>
+                    </td>
                     <td>{task.assigned_to_name || '—'}</td>
                     <td>{task.created_by_name}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+        {safeTasks.length > 5 && (
+          <div style={{ marginTop: 12 }}>
+            <Link to="/tasks" style={{ color: 'var(--primary)', fontSize: '0.875rem', fontWeight: 600 }}>
+              View all {safeTasks.length} tasks →
+            </Link>
           </div>
         )}
       </div>

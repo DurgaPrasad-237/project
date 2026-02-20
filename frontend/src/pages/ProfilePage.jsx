@@ -35,7 +35,7 @@ export default function ProfilePage() {
       await updateUser(user.id, data)
       await fetchMe()
       setSuccess('Profile updated successfully!')
-      setForm(f => ({ ...f, password: '', confirmPassword: '' }))
+      setForm((f) => ({ ...f, password: '', confirmPassword: '' }))
     } catch (err) {
       setError(err.response?.data?.error || 'Update failed')
     } finally {
@@ -43,7 +43,12 @@ export default function ProfilePage() {
     }
   }
 
-  const initials = user?.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?'
+  const initials = user?.name
+    ?.split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || '?'
 
   return (
     <div>
@@ -55,6 +60,7 @@ export default function ProfilePage() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 24, maxWidth: 800 }}>
+        {/* Avatar card */}
         <div className="card" style={{ textAlign: 'center' }}>
           <div className="avatar" style={{ width: 80, height: 80, fontSize: '1.75rem', margin: '0 auto 16px' }}>
             {initials}
@@ -64,6 +70,7 @@ export default function ProfilePage() {
           <span className={`badge badge-${user?.role}`}>{user?.role}</span>
         </div>
 
+        {/* Edit form */}
         <div className="card">
           <h3 style={{ fontWeight: 700, marginBottom: 20 }}>Edit Information</h3>
           {error && <div className="alert alert-error">{error}</div>}
@@ -78,7 +85,7 @@ export default function ProfilePage() {
               <input className="form-input" type="email" name="email" value={form.email} onChange={handle} required />
             </div>
             <div className="form-group">
-              <label className="form-label">New Password (leave blank to keep current)</label>
+              <label className="form-label">New Password <span style={{ color: 'var(--muted)', fontWeight: 400 }}>(leave blank to keep current)</span></label>
               <input className="form-input" type="password" name="password" value={form.password} onChange={handle} placeholder="••••••••" />
             </div>
             <div className="form-group">
@@ -86,7 +93,7 @@ export default function ProfilePage() {
               <input className="form-input" type="password" name="confirmPassword" value={form.confirmPassword} onChange={handle} placeholder="••••••••" />
             </div>
             <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? 'Saving...' : 'Save Changes'}
+              {loading ? 'Saving…' : 'Save Changes'}
             </button>
           </form>
         </div>

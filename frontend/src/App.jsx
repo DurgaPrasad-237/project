@@ -12,15 +12,8 @@ import ProfilePage from './pages/ProfilePage'
 
 function AppLoader() {
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: '#0f172a',
-      color: '#94a3b8'
-    }}>
-      Loading WorkManager...
+    <div className="app-loader">
+      Loading WorkManager…
     </div>
   )
 }
@@ -44,21 +37,26 @@ export default function App() {
     initAuth()
   }, [])
 
-  // Block rendering entire app until we know auth state
+  // Block render until auth check is done
   if (loading) return <AppLoader />
 
   return (
     <BrowserRouter>
       <Routes>
+        {/* Guest routes */}
         <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
         <Route path="/signup" element={<GuestRoute><SignupPage /></GuestRoute>} />
 
+        {/* Protected routes inside Layout */}
         <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
           <Route index element={<DashboardPage />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="tasks" element={<TasksPage />} />
           <Route path="profile" element={<ProfilePage />} />
         </Route>
+
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   )

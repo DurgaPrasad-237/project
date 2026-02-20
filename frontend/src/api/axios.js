@@ -2,7 +2,7 @@ import axios from 'axios'
 import useAuthStore from '../store/authStore'
 
 const api = axios.create({
-  baseURL: '/api',   // relative — works same-origin, no CORS issues
+  baseURL: '/api',
   withCredentials: true,
 })
 
@@ -27,9 +27,8 @@ api.interceptors.response.use(
       originalRequest.url.includes('/auth/login') ||
       originalRequest.url.includes('/auth/signup') ||
       originalRequest.url.includes('/auth/refresh') ||
-      originalRequest.url.includes('/auth/me') // ← prevents infinite loop on fresh visit
+      originalRequest.url.includes('/auth/me')
 
-    // Only try refresh for protected routes
     if (status === 401 && !originalRequest._retry && !isAuthRoute) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {

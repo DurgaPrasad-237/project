@@ -7,10 +7,15 @@ export default function Layout() {
 
   const handleLogout = async () => {
     await logout()
-    navigate('/login')
+    navigate('/login', { replace: true })
   }
 
-  const initials = user?.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?'
+  const initials = user?.name
+    ?.split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || '?'
 
   return (
     <div className="layout">
@@ -30,7 +35,7 @@ export default function Layout() {
               <div className="sidebar-user-role">{user?.role}</div>
             </div>
           </div>
-          <button className="btn btn-secondary" style={{ width: '100%' }} onClick={handleLogout}>
+          <button className="btn btn-secondary" style={{ width: '100%', justifyContent: 'center' }} onClick={handleLogout}>
             Logout
           </button>
         </div>

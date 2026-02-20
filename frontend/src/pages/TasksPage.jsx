@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import useAuthStore from '../store/authStore'
 import useTasksStore from '../store/tasksStore'
 import useUsersStore from '../store/usersStore'
 
@@ -36,7 +35,7 @@ function TaskModal({ task, onClose, onSave, users }) {
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <span className="modal-title">{task ? 'Edit Task' : 'New Task'}</span>
           <button className="modal-close" onClick={onClose}>✕</button>
@@ -45,16 +44,16 @@ function TaskModal({ task, onClose, onSave, users }) {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-label">Title *</label>
-            <input className="form-input" name="title" value={form.title} onChange={handle} required placeholder="Task title" />
+            <input className="form-input" name="title" value={form.title} onChange={handle} required placeholder="Task title" autoFocus />
           </div>
           <div className="form-group">
             <label className="form-label">Description</label>
-            <textarea className="form-textarea" name="description" value={form.description} onChange={handle} placeholder="Task description..." />
+            <textarea className="form-textarea" name="description" value={form.description} onChange={handle} placeholder="Task description…" />
           </div>
           <div className="form-group">
             <label className="form-label">Status</label>
             <select className="form-select" name="status" value={form.status} onChange={handle}>
-              {STATUS_OPTIONS.map(s => (
+              {STATUS_OPTIONS.map((s) => (
                 <option key={s} value={s}>{s.replace('_', ' ')}</option>
               ))}
             </select>
@@ -63,7 +62,7 @@ function TaskModal({ task, onClose, onSave, users }) {
             <label className="form-label">Assign To</label>
             <select className="form-select" name="assigned_to" value={form.assigned_to} onChange={handle}>
               <option value="">Unassigned</option>
-              {users.map(u => (
+              {(users ?? []).map((u) => (
                 <option key={u.id} value={u.id}>{u.name} ({u.role})</option>
               ))}
             </select>
@@ -71,7 +70,7 @@ function TaskModal({ task, onClose, onSave, users }) {
           <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
             <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
             <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? 'Saving...' : 'Save Task'}
+              {loading ? 'Saving…' : 'Save Task'}
             </button>
           </div>
         </form>
@@ -92,14 +91,12 @@ export default function TasksPage() {
     fetchUsers()
   }, [])
 
-  const filtered = filter === 'all' ? tasks : tasks.filter(t => t.status === filter)
+  const safeTasks = tasks ?? []
+  const filtered = filter === 'all' ? safeTasks : safeTasks.filter((t) => t.status === filter)
 
   const handleSave = async (data) => {
-    if (modal.task) {
-      await updateTask(modal.task.id, data)
-    } else {
-      await createTask(data)
-    }
+    if (modal.task) await updateTask(modal.task.id, data)
+    else await createTask(data)
   }
 
   const handleDelete = async (task) => {
@@ -125,8 +122,9 @@ export default function TasksPage() {
 
       {error && <div className="alert alert-error">{error}</div>}
 
-      <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-        {['all', ...STATUS_OPTIONS].map(s => (
+      {/* Filter buttons */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+        {['all', ...STATUS_OPTIONS].map((s) => (
           <button
             key={s}
             className={`btn ${filter === s ? 'btn-primary' : 'btn-secondary'} btn-sm`}
@@ -140,7 +138,7 @@ export default function TasksPage() {
       <div className="card" style={{ padding: 0 }}>
         <div className="table-wrapper">
           {loading ? (
-            <div className="spinner">Loading tasks...</div>
+            <div className="spinner">Loading tasks…</div>
           ) : filtered.length === 0 ? (
             <div className="spinner" style={{ color: 'var(--muted)' }}>No tasks found</div>
           ) : (
@@ -156,10 +154,10 @@ export default function TasksPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map(task => (
+                {filtered.map((task) => (
                   <tr key={task.id}>
                     <td style={{ fontWeight: 500 }}>{task.title}</td>
-                    <td style={{ color: 'var(--muted)', maxWidth: 200 }}>
+                    <td style={{ color: 'var(--muted)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {task.description || '—'}
                     </td>
                     <td>
