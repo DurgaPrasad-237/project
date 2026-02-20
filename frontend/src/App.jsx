@@ -10,20 +10,6 @@ import UsersPage from './pages/UsersPage'
 import TasksPage from './pages/TasksPage'
 import ProfilePage from './pages/ProfilePage'
 
-function PrivateRoute({ children }) {
-  const { user, loading } = useAuthStore()
-
-  if (loading) return <AppLoader />
-  return user ? children : <Navigate to="/login" replace />
-}
-
-function GuestRoute({ children }) {
-  const { user, loading } = useAuthStore()
-
-  if (loading) return <AppLoader />
-  return !user ? children : <Navigate to="/" replace />
-}
-
 function AppLoader() {
   return (
     <div style={{
@@ -39,12 +25,27 @@ function AppLoader() {
   )
 }
 
+function PrivateRoute({ children }) {
+  const { user, loading } = useAuthStore()
+  if (loading) return <AppLoader />
+  return user ? children : <Navigate to="/login" replace />
+}
+
+function GuestRoute({ children }) {
+  const { user, loading } = useAuthStore()
+  if (loading) return <AppLoader />
+  return !user ? children : <Navigate to="/" replace />
+}
+
 export default function App() {
-  const initAuth = useAuthStore((s) => s.initAuth)
+  const { initAuth, loading } = useAuthStore()
 
   useEffect(() => {
-    initAuth()   // only restores session if cookie exists
+    initAuth()
   }, [])
+
+  // Block rendering entire app until we know auth state
+  if (loading) return <AppLoader />
 
   return (
     <BrowserRouter>
