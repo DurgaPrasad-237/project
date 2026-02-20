@@ -11,18 +11,27 @@ export default function LoginPage() {
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-    try {
-      await login(email, password)
-      navigate('/')
-    } catch (err) {
-      setError(err.response?.data?.error || 'Login failed')
-    } finally {
-      setLoading(false)
-    }
+  e.preventDefault()
+  console.log("🔥 Submit clicked")
+
+  setError('')
+  setLoading(true)
+
+  try {
+    console.log("📤 Calling login with:", email)
+
+    await login(email, password)
+
+    console.log("✅ Login resolved")
+    navigate('/')
+
+  } catch (err) {
+    console.log("❌ Login error:", err)
+    setError(err.response?.data?.error || 'Login failed')
+  } finally {
+    setLoading(false)
   }
+}
 
   return (
     <div className="auth-container">
