@@ -2,8 +2,8 @@ import axios from 'axios'
 import useAuthStore from '../store/authStore'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
-  withCredentials: true, // MUST for cookie auth
+  baseURL: '/api',   // relative — works same-origin, no CORS issues
+  withCredentials: true,
 })
 
 let isRefreshing = false
