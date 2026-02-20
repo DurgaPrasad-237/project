@@ -11,7 +11,7 @@ from routes.tasks import tasks_bp
 load_dotenv()
 
 # Path to React build folder (adjust if your folder structure is different)
-FRONTEND_DIST = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'dist')
+FRONTEND_DIST = os.path.join(os.path.dirname(__file__), 'dist')
 
 app = Flask(__name__, static_folder=FRONTEND_DIST, static_url_path='')
 

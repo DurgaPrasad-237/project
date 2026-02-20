@@ -1,0 +1,6 @@
+{
+  "routes": [
+    { "src": "/api/(.*)", "dest": "https://project-63ls.onrender.com/api/$1" },
+    { "src": "/.*", "dest": "/index.html" }
+  ]
+}
