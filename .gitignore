@@ -9,7 +9,7 @@ frontend/dist/
 frontend/.env.development
 frontend/.env.local
 frontend/.env.*.local
-
+frontend/dist/    ← ✅ correct, ignore frontend's dist
 # General
 .env
 .DS_Store
